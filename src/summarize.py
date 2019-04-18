@@ -9,8 +9,10 @@ stopwords = set(stopwords.words('english'))
 
 # TODO: EVALUATE STOP WORDS
 
-def summarize(tldr: str) -> List[str]:
+def summarize(tldr: str, threshold: float = None) -> List[str]:
     """Summarize a body of text."""
+    threshold = threshold if threshold is not None else 0.
+
     text = TextBlob(tldr)
     sentences = text.sentences
 
@@ -20,11 +22,16 @@ def summarize(tldr: str) -> List[str]:
 
     sentence_scores = score_sentences(preprocessed_sentences, word_scores)
 
-    # TODO: average scores
+    average_score = sum(
+        [score for score in sentence_scores.values()]
+    ) / len(sentence_scores)
 
-    # TODO: Return sentences filtered if sentence_scores[index] >= avg + threshold
+    summary = [
+        sentence for i, sentence in enumerate(sentences)
+        if sentence_scores[i] >= average_score + threshold
+    ]
 
-    return sentences
+    return summary
 
 def preprocess_sentences(sentences: List[Sentence]) -> List[List[str]]:
     """Clean up text for summarization."""
@@ -62,8 +69,7 @@ def score_sentences(sentences: List[List[str]], word_weights: Dict[str, float]) 
         score = sum([word_weights[word] for word in sentence]) / len(sentence)
         scores[i] = score
     
-    print(scores)
-    quit()
+    return scores
 
 if __name__ == '__main__':
-    print(summarize('well a dog is a dog of course. dogs cant argue with horses or dogs or dogs dogs dogs dogs dogs dogs!'))
+    print(summarize('well a dog is a dog of course. dogs cant argue with muh ass!'))
