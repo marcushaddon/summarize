@@ -16,10 +16,8 @@ def summarize(tldr: str) -> List[str]:
 
     preprocessed_sentences = preprocess_sentences(sentences)
 
-    # TODO
     word_scores = score_words_for_significance(preprocessed_sentences)
 
-    # TODO: Should return a dict[index] -> score
     sentence_scores = score_sentences(preprocessed_sentences, word_scores)
 
     # TODO: average scores
@@ -30,6 +28,7 @@ def summarize(tldr: str) -> List[str]:
 
 def preprocess_sentences(sentences: List[Sentence]) -> List[List[str]]:
     """Clean up text for summarization."""
+    # IMPORTANT: Keep in same order!
     sents = []
     for sent in sentences:
         significant_words = [word for word in sent.tokens if word not in stopwords]
@@ -54,9 +53,17 @@ def score_words_for_significance(word_lists: List[List[str]]) -> Dict[str, float
         word: score / most_occurrences for word, score in counts.items()
     }
 
+    return scores
+
+def score_sentences(sentences: List[List[str]], word_weights: Dict[str, float]) -> Dict[int, float]:
+    """Score sentences in terms of importance (return a dict[index, importance])."""
+    scores = {}
+    for i, sentence in enumerate(sentences):
+        score = sum([word_weights[word] for word in sentence]) / len(sentence)
+        scores[i] = score
+    
     print(scores)
     quit()
 
-    
 if __name__ == '__main__':
-    print(summarize('hello my police police horse dude. what is the meaning of this my dude dud dude?'))
+    print(summarize('well a dog is a dog of course. dogs cant argue with horses or dogs or dogs dogs dogs dogs dogs dogs!'))
