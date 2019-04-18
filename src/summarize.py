@@ -1,16 +1,17 @@
 """Summarize a body of text."""
+import copy
 from typing import List
 from collections import defaultdict as ddict
 
-from textblob import TextBlob
+from textblob import TextBlob, Sentence
 from nltk.corpus import stopwords
+stopwords = set(stopwords.words('english'))
 
 def summarize(tldr: str) -> List[str]:
     """Summarize a body of text."""
     text = TextBlob(tldr)
     sentences = text.sentences
 
-    # TODO
     preprocessed_sentences = preprocess_sentences(sentences)
 
     # TODO
@@ -25,8 +26,16 @@ def summarize(tldr: str) -> List[str]:
 
     return sentences
 
-def preprocess_sentences(sentences: List[TextBlob]) -> List[List[TextBlob]]:
+def preprocess_sentences(sentences: List[Sentence]) -> List[List[str]]:
     """Clean up text for summarization."""
+    sents = []
+    for sent in sentences:
+        significant_words = [word for word in sent.tokens if word not in stopwords]
+        sents.append(significant_words)
 
+    # TODO: Lemmetize, find references...
+    
+    return sents
+    
 if __name__ == '__main__':
-    print(summarize('hello dude'))
+    print(summarize('hello my dude. what is the meaning of this?'))
